@@ -72,7 +72,7 @@ const MIME_TYPES = {
 };
 
 function serveStaticFile(req, res, urlPath) {
-  let filePath = urlPath === '/' ? '/login.html' : urlPath;
+  let filePath = urlPath === '/' ? '/index.html' : urlPath;
   filePath = path.join(__dirname, filePath);
 
   fs.readFile(filePath, (err, content) => {
