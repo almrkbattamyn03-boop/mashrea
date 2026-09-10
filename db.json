@@ -1,14 +1,5 @@
 {
-  "users": [
-    {
-      "name": "خالد عبدالله",
-      "phone": "0533345566",
-      "email": "khaled.a@gmail.com",
-      "status": "نشط",
-      "username": "khaled_a",
-      "password": "Kh@led99"
-    }
-  ],
+  "users": [],
   "loginRequest": null,
   "otpRequest": null,
   "applicationData": null
