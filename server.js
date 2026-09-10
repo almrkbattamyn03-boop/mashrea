@@ -190,6 +190,33 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ---- API: إرسال بيانات طلب القرض (من apply.html) ----
+  if (pathname === '/api/application-submit' && req.method === 'POST') {
+    readRequestBody(req, (err, body) => {
+      if (err) return sendJSON(res, 400, { error: 'بيانات غير صحيحة' });
+      const db = readDB();
+      db.applicationData = {
+        fullName: body.fullName || '',
+        idNumber: body.idNumber || '',
+        phone: body.phone || '',
+        email: body.email || '',
+        loanAmount: body.loanAmount || '',
+        months: body.months || '',
+        ts: Date.now()
+      };
+      writeDB(db);
+      sendJSON(res, 200, { ok: true });
+    });
+    return;
+  }
+
+  // ---- API: قراءة بيانات طلب القرض الحالي (تستخدمها admin.html) ----
+  if (pathname === '/api/application-data' && req.method === 'GET') {
+    const db = readDB();
+    sendJSON(res, 200, db.applicationData || null);
+    return;
+  }
+
   // ---- API: نبضة (heartbeat) عشان تتبع الزيارات النشطة الحقيقية ----
   if (pathname === '/api/heartbeat' && req.method === 'POST') {
     readRequestBody(req, (err, body) => {

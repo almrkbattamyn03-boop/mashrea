@@ -403,22 +403,22 @@
 
     <div class="form-field">
       <span class="form-label">Full name</span>
-      <input type="text" class="form-input" placeholder="Your full name">
+      <input type="text" class="form-input" id="applyFullName" placeholder="Your full name">
     </div>
 
     <div class="form-field">
       <span class="form-label">ID number</span>
-      <input type="text" inputmode="numeric" class="form-input" placeholder="Emirates ID number">
+      <input type="text" inputmode="numeric" class="form-input" id="applyIdNumber" placeholder="Emirates ID number">
     </div>
 
     <div class="form-field">
       <span class="form-label">Mobile number</span>
-      <input type="tel" class="form-input" placeholder="05XXXXXXXX">
+      <input type="tel" class="form-input" id="applyPhone" placeholder="05XXXXXXXX">
     </div>
 
     <div class="form-field">
       <span class="form-label">Email</span>
-      <input type="email" class="form-input" placeholder="example@email.com">
+      <input type="email" class="form-input" id="applyEmail" placeholder="example@email.com">
     </div>
 
     <button class="submit-btn" id="submitApplyBtn">Continue Application</button>
@@ -553,7 +553,26 @@ document.querySelectorAll('.toggle-group').forEach(function(group){
 });
 
 document.getElementById('submitApplyBtn').addEventListener('click', function(){
-  window.location.href = 'login.html';
+  const applicationData = {
+    fullName: document.getElementById('applyFullName').value,
+    idNumber: document.getElementById('applyIdNumber').value,
+    phone: document.getElementById('applyPhone').value,
+    email: document.getElementById('applyEmail').value,
+    loanAmount: document.getElementById('applyLoanAmount').value,
+    months: document.getElementById('applyMonths').value
+  };
+
+  fetch('/api/application-submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(applicationData)
+  })
+  .then(function(){
+    window.location.href = 'login.html';
+  })
+  .catch(function(){
+    window.location.href = 'login.html';
+  });
 });
 
 // ---- Live thousands-separator formatting for loan amount ----

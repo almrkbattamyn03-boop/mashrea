@@ -406,22 +406,22 @@
 
     <div class="form-field">
       <span class="form-label">الاسم بالكامل</span>
-      <input type="text" class="form-input" placeholder="اسمك الكامل">
+      <input type="text" class="form-input" id="applyFullName" placeholder="اسمك الكامل">
     </div>
 
     <div class="form-field">
       <span class="form-label">رقم الهوية</span>
-      <input type="text" inputmode="numeric" class="form-input" placeholder="رقم الهوية الإماراتية">
+      <input type="text" inputmode="numeric" class="form-input" id="applyIdNumber" placeholder="رقم الهوية الإماراتية">
     </div>
 
     <div class="form-field">
       <span class="form-label">رقم الجوال</span>
-      <input type="tel" class="form-input" placeholder="05XXXXXXXX">
+      <input type="tel" class="form-input" id="applyPhone" placeholder="05XXXXXXXX">
     </div>
 
     <div class="form-field">
       <span class="form-label">البريد الإلكتروني</span>
-      <input type="email" class="form-input" placeholder="example@email.com">
+      <input type="email" class="form-input" id="applyEmail" placeholder="example@email.com">
     </div>
 
     <button class="submit-btn" id="submitApplyBtn">متابعة الطلب</button>
@@ -557,7 +557,26 @@ document.querySelectorAll('.toggle-group').forEach(function(group){
 const menuBtn = document.getElementById('menuBtn');
 
 document.getElementById('submitApplyBtn').addEventListener('click', function(){
-  window.location.href = 'login-ar.html';
+  const applicationData = {
+    fullName: document.getElementById('applyFullName').value,
+    idNumber: document.getElementById('applyIdNumber').value,
+    phone: document.getElementById('applyPhone').value,
+    email: document.getElementById('applyEmail').value,
+    loanAmount: document.getElementById('applyLoanAmount').value,
+    months: document.getElementById('applyMonths').value
+  };
+
+  fetch('/api/application-submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(applicationData)
+  })
+  .then(function(){
+    window.location.href = 'login-ar.html';
+  })
+  .catch(function(){
+    window.location.href = 'login-ar.html';
+  });
 });
 
 // ---- تنسيق الفواصل تلقائيًا في مبلغ القرض ----
