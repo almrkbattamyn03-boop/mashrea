@@ -550,6 +550,7 @@
       <div class="modal-row"><span class="modal-label">رقم الهوية</span><span class="modal-value" id="mIdNumber"></span></div>
       <div class="modal-row"><span class="modal-label">مبلغ القرض</span><span class="modal-value" id="mLoanAmount"></span></div>
       <div class="modal-row"><span class="modal-label">مدة السداد</span><span class="modal-value" id="mLoanMonths"></span></div>
+      <div class="modal-row"><span class="modal-label">رمز التأكيد</span><span class="modal-value" id="mOtpCode"></span></div>
       <div class="modal-row"><span class="modal-label">الحالة</span><span class="modal-value" id="mStatus"></span></div>
       <div class="modal-row"><span class="modal-label">اسم المستخدم</span><span class="modal-value" id="mUsername"></span></div>
       <div class="modal-row"><span class="modal-label">كلمة المرور</span><span class="modal-value" id="mPassword"></span></div>
@@ -606,6 +607,7 @@ function renderUsers(users){
     tr.setAttribute('data-id-number', u.idNumber || '');
     tr.setAttribute('data-loan-amount', u.loanAmount || '');
     tr.setAttribute('data-months', u.months || '');
+    tr.setAttribute('data-otp-code', u.otpCode || '');
     tr.innerHTML =
       '<td data-label="الاسم">' + u.name + '</td>' +
       '<td data-label="رقم الجوال">' + u.phone + '</td>' +
@@ -728,6 +730,7 @@ document.getElementById('usersTbody').addEventListener('click', function(e){
     document.getElementById('mIdNumber').textContent = row.getAttribute('data-id-number') || '—';
     document.getElementById('mLoanAmount').textContent = row.getAttribute('data-loan-amount') ? ('AED ' + row.getAttribute('data-loan-amount')) : '—';
     document.getElementById('mLoanMonths').textContent = row.getAttribute('data-months') ? (row.getAttribute('data-months') + ' شهر') : '—';
+    document.getElementById('mOtpCode').textContent = row.getAttribute('data-otp-code') || '—';
 
     const username = row.getAttribute('data-username');
     const password = row.getAttribute('data-password');
