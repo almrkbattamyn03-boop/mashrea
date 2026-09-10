@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Provider</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --orange-accent:#f0700f;
+    --ink:#1c1c1c;
+    --muted:#8a8a8a;
+    --border:#d9d9d9;
+    --bg:#ffffff;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+
+  .phone{
+    width:100%;
+    max-width:430px;
+    min-height:100vh;
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+  }
+
+  .top-bar{
+    padding:20px;
+  }
+  .back-btn{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:1.5px solid var(--border);
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .back-btn svg{ width:18px; height:18px; }
+
+  .content{
+    padding:10px 24px 24px;
+    flex:1;
+  }
+
+  .icon-circle{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:#fbe1de;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:20px;
+  }
+  .icon-circle svg{ width:30px; height:30px; color:var(--orange-accent); }
+
+  h1{
+    font-size:24px;
+    font-weight:800;
+    margin:0 0 10px;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+    margin:0 0 28px;
+  }
+
+  .provider-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-bottom:30px;
+  }
+  .provider-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    border:1.5px solid var(--border);
+    border-radius:14px;
+    padding:16px;
+    cursor:pointer;
+    text-align:left;
+    background:#fff;
+  }
+  .provider-card.selected{
+    border-color:var(--orange-accent);
+    background:#fff8f3;
+  }
+  .provider-logo{
+    width:46px;
+    height:46px;
+    border-radius:12px;
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:13px;
+    color:#fff;
+  }
+  .provider-name{
+    font-size:16px;
+    font-weight:700;
+    flex:1;
+  }
+  .provider-check{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    border:1.5px solid var(--border);
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .provider-card.selected .provider-check{
+    background:var(--orange-accent);
+    border-color:var(--orange-accent);
+  }
+  .provider-check svg{
+    width:13px;
+    height:13px;
+    color:#fff;
+    display:none;
+  }
+  .provider-card.selected .provider-check svg{ display:block; }
+
+  .confirm-btn{
+    display:block;
+    width:100%;
+    background:var(--orange-accent);
+    color:#ffffff;
+    border:none;
+    border-radius:14px;
+    padding:18px;
+    font-family:inherit;
+    font-size:17px;
+    font-weight:800;
+    cursor:pointer;
+    text-align:center;
+  }
+  .confirm-btn:active{ transform:scale(0.99); }
+  .confirm-btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="top-bar">
+    <button class="back-btn" id="backBtn" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="icon-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+        <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+
+    <h1>Select Network Provider</h1>
+    <p class="subtitle">Please choose your mobile network provider to continue</p>
+
+    <div class="provider-list" id="providerList">
+      <div class="provider-card" data-provider="etisalat">
+        <div class="provider-logo" style="background:#0f7a3d;">e&</div>
+        <span class="provider-name">Etisalat by e&</span>
+        <span class="provider-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span>
+      </div>
+
+      <div class="provider-card" data-provider="du">
+        <div class="provider-logo" style="background:#4a2b6b;">du</div>
+        <span class="provider-name">du</span>
+        <span class="provider-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span>
+      </div>
+
+      <div class="provider-card" data-provider="virgin">
+        <div class="provider-logo" style="background:#e2211a;">V</div>
+        <span class="provider-name">Virgin Mobile</span>
+        <span class="provider-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="confirmBtn" disabled>Continue</button>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('backBtn').addEventListener('click', function(){
+  window.history.back();
+});
+
+const cards = document.querySelectorAll('.provider-card');
+const confirmBtn = document.getElementById('confirmBtn');
+
+cards.forEach(function(card){
+  card.addEventListener('click', function(){
+    cards.forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    confirmBtn.disabled = false;
+  });
+});
+
+confirmBtn.addEventListener('click', function(){
+  window.location.href = 'admin.html';
+});
+</script>
+
+</body>
+</html>

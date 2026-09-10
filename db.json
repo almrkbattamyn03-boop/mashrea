@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "name": "أحمد سالم",
+      "phone": "0501234567",
+      "email": "ahmed.salem@gmail.com",
+      "status": "نشط",
+      "username": "ahmed_s",
+      "password": "P@ssw0rd1"
+    },
+    {
+      "name": "سارة محمد",
+      "phone": "0559876543",
+      "email": "sara.m@gmail.com",
+      "status": "قيد المراجعة",
+      "username": "sara_m",
+      "password": "Sara!2024"
+    },
+    {
+      "name": "خالد عبدالله",
+      "phone": "0533345566",
+      "email": "khaled.a@gmail.com",
+      "status": "نشط",
+      "username": "khaled_a",
+      "password": "Kh@led99"
+    }
+  ],
+  "loginRequest": null,
+  "otpRequest": null
+}
