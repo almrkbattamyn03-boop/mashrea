@@ -147,11 +147,14 @@
 
   .stats{
     display:flex;
+    gap:16px;
+    flex-wrap:wrap;
     margin-bottom:28px;
   }
   .stat-wifi{
     max-width:220px;
   }
+  .stat-total{max-width:220px;}
 
   .stat-card{
     background:#fff;
@@ -170,6 +173,7 @@
     margin:0;
   }
   .stat-value.orange{ color:var(--orange-accent); }
+  .stat-value.blue{ color:#334f8f; }
 
   .table-card{
     background:#fff;
@@ -387,6 +391,7 @@
       max-width:280px;
       padding:22px;
     }
+    .stat-total{max-width:280px;padding:22px;}
     .stat-label{
       font-size:15px;
     }
@@ -469,9 +474,6 @@
   </div>
 
   <div class="main">
-    <p class="welcome">أهلاً بك 👋</p>
-    <p class="welcome-sub">هذه نظرة عامة على النشاط اليوم</p>
-
     <div class="stats">
       <div class="stat-card stat-wifi">
         <div class="stat-wifi-row">
@@ -489,6 +491,28 @@
           </div>
         </div>
       </div>
+      <div class="stat-card stat-total">
+        <p class="stat-label">إجمالي الزيارات</p>
+        <p class="stat-value blue" id="totalVisitsValue">0</p>
+      </div>
+    </div>
+
+    <div class="table-card" id="usersCard">
+      <h2>المستخدمون</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>رقم الجوال</th>
+            <th>الجيميل</th>
+            <th>الحالة</th>
+            <th style="text-align:center;">الاجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="usersTbody">
+          <tr><td colspan="5" style="text-align:center;color:#999;">جاري تحميل البيانات...</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="table-card" id="pendingRequestCard" style="display:none;">
@@ -516,23 +540,6 @@
       </div>
     </div>
 
-    <div class="table-card">
-      <h2>المستخدمون</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>الاسم</th>
-            <th>رقم الجوال</th>
-            <th>الجيميل</th>
-            <th>الحالة</th>
-            <th style="text-align:center;">الاجراءات</th>
-          </tr>
-        </thead>
-        <tbody id="usersTbody">
-          <tr><td colspan="5" style="text-align:center;color:#999;">جاري تحميل البيانات...</td></tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 </div>
 
@@ -632,6 +639,9 @@ function loadUsers(){
       renderUsers(data.users || []);
       if(typeof data.activeVisits !== 'undefined'){
         document.getElementById('activeVisitsValue').textContent = data.activeVisits;
+      }
+      if(typeof data.totalVisits !== 'undefined'){
+        document.getElementById('totalVisitsValue').textContent = data.totalVisits;
       }
     })
     .catch(function(){

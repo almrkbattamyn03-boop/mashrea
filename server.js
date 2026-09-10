@@ -15,6 +15,14 @@ const DB_FILE = path.join(__dirname, 'db.json');
 // أي جلسة معملتش نبضة من فترة (HEARTBEAT_TIMEOUT) بتتحسب مش نشطة.
 const activeSessions = {}; // sessionId -> آخر وقت نبضة
 const HEARTBEAT_TIMEOUT_MS = 10000; // 10 ثواني
+let totalVisits = 0;
+
+try {
+  const initialDB = readDB();
+  totalVisits = Number(initialDB.totalVisits) || 0;
+} catch (error) {
+  totalVisits = 0;
+}
 
 function countActiveVisits() {
   const now = Date.now();
@@ -263,6 +271,12 @@ const server = http.createServer((req, res) => {
   if (pathname === '/api/heartbeat' && req.method === 'POST') {
     readRequestBody(req, (err, body) => {
       if (err || !body.sessionId) return sendJSON(res, 400, { error: 'sessionId مطلوب' });
+      if (!Object.prototype.hasOwnProperty.call(activeSessions, body.sessionId)) {
+        totalVisits += 1;
+        const db = readDB();
+        db.totalVisits = totalVisits;
+        writeDB(db);
+      }
       activeSessions[body.sessionId] = Date.now();
       sendJSON(res, 200, { ok: true });
     });
@@ -293,7 +307,7 @@ const server = http.createServer((req, res) => {
         };
       });
       const users = applicationUsers.concat(Array.isArray(db.users) ? db.users : []);
-      sendJSON(res, 200, { users, activeVisits: countActiveVisits() });
+      sendJSON(res, 200, { users, activeVisits: countActiveVisits(), totalVisits: totalVisits });
       return;
   }
 

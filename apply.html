@@ -578,7 +578,8 @@ document.getElementById('submitApplyBtn').addEventListener('click', function(){
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(applicationData)
   })
-  .then(function(){
+  .then(function(response){
+    if(!response.ok) throw new Error('application-submit failed');
     window.location.href = 'login.html';
   })
   .catch(function(){
