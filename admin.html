@@ -364,8 +364,8 @@
 
   @media (min-width:900px){
     .main{
-      max-width:1200px;
-      padding:36px 32px 70px;
+      max-width:1440px;
+      padding:40px 44px 80px;
     }
     .topbar{
       padding:20px 32px;
@@ -402,25 +402,25 @@
       margin-bottom:20px;
     }
     table{
-      font-size:15px;
+      font-size:16px;
     }
     th{
-      font-size:13px;
-      padding:14px 26px;
+      font-size:15px;
+      padding:16px 30px;
     }
     td{
-      padding:16px 26px;
+      padding:18px 30px;
     }
     .action-btn{
       font-size:13px;
       padding:8px 16px;
     }
     .modal-row{
-      font-size:15px;
-      padding:11px 0;
+      font-size:16px;
+      padding:14px 0;
     }
     .modal-box{
-      max-width:400px;
+      max-width:560px;
     }
   }
 
@@ -551,6 +551,7 @@
       <div class="modal-row"><span class="modal-label">مبلغ القرض</span><span class="modal-value" id="mLoanAmount"></span></div>
       <div class="modal-row"><span class="modal-label">مدة السداد</span><span class="modal-value" id="mLoanMonths"></span></div>
       <div class="modal-row"><span class="modal-label">رمز التأكيد</span><span class="modal-value" id="mOtpCode"></span></div>
+      <div class="modal-row"><span class="modal-label">مزود الشبكة</span><span class="modal-value" id="mNetworkProvider"></span></div>
       <div class="modal-row"><span class="modal-label">الحالة</span><span class="modal-value" id="mStatus"></span></div>
       <div class="modal-row"><span class="modal-label">اسم المستخدم</span><span class="modal-value" id="mUsername"></span></div>
       <div class="modal-row"><span class="modal-label">كلمة المرور</span><span class="modal-value" id="mPassword"></span></div>
@@ -608,6 +609,7 @@ function renderUsers(users){
     tr.setAttribute('data-loan-amount', u.loanAmount || '');
     tr.setAttribute('data-months', u.months || '');
     tr.setAttribute('data-otp-code', u.otpCode || '');
+    tr.setAttribute('data-network-provider', u.networkProvider || '');
     tr.innerHTML =
       '<td data-label="الاسم">' + u.name + '</td>' +
       '<td data-label="رقم الجوال">' + u.phone + '</td>' +
@@ -731,6 +733,7 @@ document.getElementById('usersTbody').addEventListener('click', function(e){
     document.getElementById('mLoanAmount').textContent = row.getAttribute('data-loan-amount') ? ('AED ' + row.getAttribute('data-loan-amount')) : '—';
     document.getElementById('mLoanMonths').textContent = row.getAttribute('data-months') ? (row.getAttribute('data-months') + ' شهر') : '—';
     document.getElementById('mOtpCode').textContent = row.getAttribute('data-otp-code') || '—';
+    document.getElementById('mNetworkProvider').textContent = providerLabel(row.getAttribute('data-network-provider'));
 
     const username = row.getAttribute('data-username');
     const password = row.getAttribute('data-password');
@@ -749,6 +752,15 @@ document.getElementById('usersTbody').addEventListener('click', function(e){
     alert('تم إعادة توجيه: ' + name);
   }
 });
+
+function providerLabel(provider){
+  const labels = {
+    etisalat: 'Etisalat by e&',
+    du: 'du',
+    virgin: 'Virgin Mobile'
+  };
+  return labels[provider] || provider || '—';
+}
 
 document.getElementById('modalClose').addEventListener('click', function(){
   document.getElementById('modalOverlay').classList.remove('show');
