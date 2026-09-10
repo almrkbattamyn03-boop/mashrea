@@ -203,8 +203,8 @@
     color:#d21f1f;
     font-weight:800;
     font-size:14px;
-    text-align:center;
-    margin:0 0 14px;
+    text-align:left;
+    margin:0 0 10px;
   }
 </style>
 </head>
@@ -226,6 +226,8 @@
       </div>
       <h1>Sign in to your account</h1>
     </div>
+
+    <p class="login-error" id="loginError"></p>
 
     <div class="field">
       <input type="text" id="username" placeholder="Username">
@@ -250,7 +252,6 @@
     </div>
 
     <button class="btn btn-outline">Create username and password</button>
-    <p class="login-error" id="loginError"></p>
     <button class="btn btn-solid" id="loginBtn">Sign in</button>
   </div>
 

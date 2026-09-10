@@ -204,8 +204,8 @@
     color:#d21f1f;
     font-weight:800;
     font-size:14px;
-    text-align:center;
-    margin:0 0 14px;
+    text-align:right;
+    margin:0 0 10px;
   }
 </style>
 </head>
@@ -227,6 +227,8 @@
       </div>
       <h1>قم بتسجيل الدخول إلى حسابك</h1>
     </div>
+
+    <p class="login-error" id="loginError"></p>
 
     <div class="field">
       <input type="text" id="username" placeholder="إسم المستخدم">
@@ -251,7 +253,6 @@
     </div>
 
     <button class="btn btn-outline">إنشاء اسم المستخدم وكلمة المرور</button>
-    <p class="login-error" id="loginError"></p>
     <button class="btn btn-solid" id="loginBtn">تسجيل دخول</button>
   </div>
 
